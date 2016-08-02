@@ -8,44 +8,42 @@ var reviveDb = require(__dirname + '/../db');
 var reqUrl = 'http://fitnesssf.com/events/castro';
 var gymID = 'O2rhq605gCvtCnCDMIH3rF3XjAHdB3gH';
 
-function parseHtml($) {
-  var eventTitle = $(this).find('h4').text();
-
-  // timeString example 7:00pm - 8:00pm
-  var timeString = $(this).find('.event-time').text();
-  var eventStart = timeString.split('-')[0].trim();
-  var eventEnd = timeString.split('-')[1].trim();
-  var eventDay = $(this).parent().find('.schedule-day-name').text().trim();
-
-  var trainerName = $(this).find('.event-trainer').text();
-  var trainerId = null;
-
-  var eventDomId = $(this).find('a').attr('data-remodal-target');
-  var eventDescription = null;
-  if (eventDomId) {
-    eventDescription = $('[data-remodal-id="' + eventDomId + '"]')
-      .find('.event-description-content p').text();
-  }
-
-  var eventCategory = null;
-  var eventCategoryId = null;
-
-  return {
-    eventTitle: eventTitle,
-    trainerName: trainerName,
-    eventDay: eventDay,
-    eventStart: moment(eventStart, 'h:mma'),
-    eventEnd: moment(eventEnd, 'h:mma'),
-    eventDescription: eventDescription,
-    eventCategory: eventCategory,
-    eventCategoryId: eventCategoryId,
-    trainerId: trainerId
-  };
-}
-
 scraperjs.StaticScraper.create(reqUrl)
   .scrape(function($) {
-    return $('.single-event').map(parseHtml($)).get();
+    return $('.single-event').map(function() {
+      var eventTitle = $(this).find('h4').text();
+
+      // timeString example 7:00pm - 8:00pm
+      var timeString = $(this).find('.event-time').text();
+      var eventStart = timeString.split('-')[0].trim();
+      var eventEnd = timeString.split('-')[1].trim();
+      var eventDay = $(this).parent().find('.schedule-day-name').text().trim();
+
+      var trainerName = $(this).find('.event-trainer').text();
+      var trainerId = null;
+
+      var eventDomId = $(this).find('a').attr('data-remodal-target');
+      var eventDescription = null;
+      if (eventDomId) {
+        eventDescription = $('[data-remodal-id="' + eventDomId + '"]')
+          .find('.event-description-content p').text();
+      }
+
+      var eventCategory = null;
+      var eventCategoryId = null;
+
+      return {
+        eventTitle: eventTitle,
+        trainerName: trainerName,
+        eventDay: eventDay,
+        eventStart: moment(eventStart, 'h:mma'),
+        eventEnd: moment(eventEnd, 'h:mma'),
+        eventDescription: eventDescription,
+        eventCategory: eventCategory,
+        eventCategoryId: eventCategoryId,
+        trainerId: trainerId
+      };
+    }).get();
   })
   .then(function(events) {
     var recordsToInsert = monthlyEventFactory(events);

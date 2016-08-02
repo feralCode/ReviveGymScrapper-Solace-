@@ -25,7 +25,7 @@ scraperjs.StaticScraper.create(reqUrl)
 
       var eventDomId = $(this).find('a').attr('data-remodal-target');
       var eventDescription = null;
-      if(eventDomId) {
+      if (eventDomId) {
         eventDescription = $('[data-remodal-id="' + eventDomId + '"]')
           .find('.event-description-content p').text();
       }
@@ -34,7 +34,7 @@ scraperjs.StaticScraper.create(reqUrl)
       var eventCategoryId = null;
 
       return {
-        eventTitle : eventTitle,
+        eventTitle: eventTitle,
         trainerName: trainerName,
         eventDay: eventDay,
         eventStart: moment(eventStart, 'h:mma'),
@@ -43,13 +43,13 @@ scraperjs.StaticScraper.create(reqUrl)
         eventCategory: eventCategory,
         eventCategoryId: eventCategoryId,
         trainerId: trainerId
-      }
+      };
     }).get();
   })
   .then(function(events) {
     var recordsToInsert = monthlyEventFactory(events);
     //console.log(recordsToInsert);
-    _.each(recordsToInsert, function (record) {
+    _.each(recordsToInsert, function(record) {
       reviveDb
         .Event
         .create(record)
@@ -74,14 +74,15 @@ function monthlyEventFactory(events) {
   var dateIndex = moment().startOf('month');
   var eventsToInsert = [];
   // roll through each day of the month adding classes
-  _.times(daysCount, function () {
+  _.times(daysCount, function() {
     dateIndex.add(dayIndex, 'day');
-    dayIndex =+ 1;
+    dayIndex = dayIndex + 1;
     var dayString = dateIndex.format('dddd'); //Sunday Monday ... Friday Saturday
     // get events that day on this day
     var eventsOnCurrentDay = _.filter(events, {eventDay: dayString});
-    console.log('events for ' + dateIndex.format() + ' Count - ' + eventsOnCurrentDay.length);
-    console.log('------------------------------------------------------------------');
+    console.log('events for ' +
+        dateIndex.format() + ' Count - ' + eventsOnCurrentDay.length);
+    console.log('------------------------------------------------------------');
     _.each(eventsOnCurrentDay, function onEachEventToday(ev) {
       // set correct minute and hour
       var startDate = moment(dateIndex)
@@ -95,7 +96,7 @@ function monthlyEventFactory(events) {
         .minute(ev.eventEnd.minute())
         .hour(ev.eventEnd.hour())
         .second(0)
-        .millisecond(0);;
+        .millisecond(0);
       var parsedEvent = {
         id: uuid.v4(),
         startDate: startDate,
