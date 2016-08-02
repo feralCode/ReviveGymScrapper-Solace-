@@ -8,7 +8,7 @@ var reviveDb = require(__dirname + '/../db');
 var reqUrl = 'http://fitnesssf.com/events/castro';
 var gymID = 'O2rhq605gCvtCnCDMIH3rF3XjAHdB3gH';
 
-function parseHtml() {
+function parseHtml($) {
   var eventTitle = $(this).find('h4').text();
 
   // timeString example 7:00pm - 8:00pm
@@ -45,7 +45,7 @@ function parseHtml() {
 
 scraperjs.StaticScraper.create(reqUrl)
   .scrape(function($) {
-    return $('.single-event').map(parseHtml).get();
+    return $('.single-event').map(parseHtml($)).get();
   })
   .then(function(events) {
     var recordsToInsert = monthlyEventFactory(events);
